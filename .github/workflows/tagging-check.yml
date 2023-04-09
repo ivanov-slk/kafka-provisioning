@@ -1,0 +1,33 @@
+name: version-tag-check
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check that tag is updated.
+        run: |
+          git config --global user.name 'ivanov-slk'
+          git config --global user.email 'ivanov-slk@users.noreply.github.com'
+          git fetch
+          git checkout $GITHUB_HEAD_REF
+
+          git pull --tags
+
+          LAST_TAG=$(git tag -n1 --sort=v:refname | awk '{print $1}' | tail -n 1)
+          LAST_TAG_COMMIT_ID=$(git tag -n1 --sort=v:refname | awk '{print $2}' | tail -n 1)
+
+          CURRENT_TAG="$(echo $(sed '5q;d' CHANGES.md) | sed 's/# //g')"
+          CURRENT_COMMIT_ID=$(git rev-parse HEAD)
+
+          if [[ "$LAST_TAG" == "$CURRENT_TAG" ]] && [[ "$LAST_TAG_COMMIT_ID" != "$CURRENT_COMMIT_ID" ]]; then
+            echo "Please update the version."
+            exit 1
+          fi

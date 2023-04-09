@@ -1,0 +1,27 @@
+name: version-tag-merge
+
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Tag the merge commit.
+        run: |
+          git config --global user.name 'ivanov-slk'
+          git config --global user.email 'ivanov-slk@users.noreply.github.com'
+          git fetch
+          git checkout $GITHUB_HEAD_REF
+
+          CURRENT_TAG="$(echo $(sed '5q;d' CHANGES.md) | sed 's/# //g')"
+          CURRENT_COMMIT_ID=$(git rev-parse HEAD)
+
+          git tag -a $CURRENT_TAG -m $CURRENT_COMMIT_ID
+          git push --tags
