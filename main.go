@@ -11,10 +11,13 @@ func main() {
 
 		// Namespace
 		namespaceName := "kafka-system"
-		namespaceMetadata := metav1.ObjectMetaArgs{Name: pulumi.String(namespaceName), Annotations: pulumi.StringMap{"linkerd.io/inject": pulumi.String("enabled")}}
-		namespaceArgs := corev1.NamespaceArgs{Metadata: &namespaceMetadata}
 
-		namespace, err := corev1.NewNamespace(ctx, namespaceName, &namespaceArgs)
+		namespace, err := corev1.NewNamespace(ctx, namespaceName, &corev1.NamespaceArgs{
+			Metadata: &metav1.ObjectMetaArgs{
+				Name:        pulumi.String(namespaceName),
+				Annotations: pulumi.StringMap{"linkerd.io/inject": pulumi.String("enabled")},
+			},
+		})
 		if err != nil {
 			return err
 		}
