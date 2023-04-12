@@ -1,11 +1,10 @@
 package main
 
 import (
-	k8s "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
-	apiext "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	helmv3 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/yaml"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -62,60 +61,68 @@ func main() {
 		// Strimzi operator
 
 		// Kafka and Zookeeper
-		// Ugly... why not just parse plain YAML?
-		kafka, err := apiext.NewCustomResource(ctx, "kafka-broker", &apiext.CustomResourceArgs{
-			ApiVersion: pulumi.String("kafka.strimzi.io/v1beta2"),
-			Kind:       pulumi.String("Kafka"),
-			Metadata: &metav1.ObjectMetaArgs{
-				Name:      pulumi.String("kafka-cluster"),
-				Namespace: namespace.Metadata.Name(),
-			},
-			OtherFields: k8s.UntypedArgs{
-				"spec": k8s.UntypedArgs{
-					"kafka": k8s.UntypedArgs{
-						"version":  "3.4.0",
-						"replicas": 1,
-						"listeners": []k8s.UntypedArgs{
-							{
-								"name": "plain",
-								"port": 9092,
-								"type": "internal",
-								"tls":  false,
-							}, {
-								"name": "tls",
-								"port": 9093,
-								"type": "internal",
-								"tls":  false,
-							},
-						},
-						"config": k8s.UntypedArgs{
-							"offsets.topic.replication.factor":         1,
-							"transaction.state.log.replication.factor": 1,
-							"transaction.state.log.min.isr":            1,
-							"default.replication.factor":               1,
-							"min.insync.replicas":                      1,
-							"inter.broker.protocol.version":            "3.4",
-						},
-						"storage": map[string]string{"type": "ephemeral"},
-					},
-					"zookeeper": k8s.UntypedArgs{
-						"replicas": 1,
-						"storage":  map[string]string{"type": "ephemeral"},
-					},
-					"entityOperator": k8s.UntypedArgs{
-						"topicOperator": map[string]string{},
-						"userOperator":  map[string]string{},
-					},
-				},
-			},
+		kafka, err := yaml.NewConfigFile(ctx, "kafka-cluster", &yaml.ConfigFileArgs{
+			File: "strimzi-kafka-cluster.yaml",
 		})
+
+		// // Ugly... why not just parse plain YAML?
+		// kafka, err := apiext.NewCustomResource(ctx, "kafka-cluster", &apiext.CustomResourceArgs{
+		// 	ApiVersion: pulumi.String("kafka.strimzi.io/v1beta2"),
+		// 	Kind:       pulumi.String("Kafka"),
+		// 	Metadata: &metav1.ObjectMetaArgs{
+		// 		Name:      pulumi.String("kafka-cluster"),
+		// 		Namespace: namespace.Metadata.Name(),
+		// 	},
+		// 	OtherFields: k8s.UntypedArgs{
+		// 		"spec": k8s.UntypedArgs{
+		// 			"kafka": k8s.UntypedArgs{
+		// 				"version":  "3.4.0",
+		// 				"replicas": 1,
+		// 				"listeners": []k8s.UntypedArgs{
+		// 					{
+		// 						"name": "plain",
+		// 						"port": 9092,
+		// 						"type": "internal",
+		// 						"tls":  false,
+		// 					}, {
+		// 						"name": "tls",
+		// 						"port": 9093,
+		// 						"type": "internal",
+		// 						"tls":  false,
+		// 					},
+		// 				},
+		// 				"config": k8s.UntypedArgs{
+		// 					"offsets.topic.replication.factor":         1,
+		// 					"transaction.state.log.replication.factor": 1,
+		// 					"transaction.state.log.min.isr":            1,
+		// 					"default.replication.factor":               1,
+		// 					"min.insync.replicas":                      1,
+		// 					"inter.broker.protocol.version":            "3.4",
+		// 				},
+		// 				"storage": map[string]string{"type": "ephemeral"},
+		// 			},
+		// 			"zookeeper": k8s.UntypedArgs{
+		// 				"replicas": 1,
+		// 				"storage":  map[string]string{"type": "ephemeral"},
+		// 			},
+		// 			"entityOperator": k8s.UntypedArgs{
+		// 				"topicOperator": map[string]string{},
+		// 				"userOperator":  map[string]string{},
+		// 			},
+		// 		},
+		// 	},
+		// })
 
 		if err != nil {
 			return err
 		}
-		ctx.Export("Kafka", kafka.Metadata.Elem().Name())
-		ctx.Export("API Version", kafka.ApiVersion)
-		ctx.Export("Custom Resource Type", kafka.Kind)
+
+		kafka_cluster := kafka.GetResource("kafka.strimzi.io/v1beta2/Kafka", "kafka-cluster", "kafka-system") //.(*apiext.CustomResource)
+		// kafka_cluster.URN().OutputState
+		ctx.Export("Kafka Cluster", kafka_cluster.URN().ToStringOutput())
+		// ctx.Export("Kafka", kafka_cluster.Metadata.Name())
+		// ctx.Export("API Version", kafka_cluster.ApiVersion)
+		// ctx.Export("Custom Resource Type", kafka_cluster.Kind)
 		// Kafka and Zookeeper
 
 		return nil
