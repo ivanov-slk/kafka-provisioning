@@ -1,0 +1,10 @@
+name: kubernetes-kafka-provisioning
+description: "A tool for automatic provisioning of a Kafka cluster in Kubernetes."
+runtime: go
+main: .
+backend:
+  url: file://./.pulumi
+stackConfigDir: ./.pulumi-config
+template:
+  description: "A tool for automatic provisioning of a Kafka cluster in Kubernetes."
+  important: true
