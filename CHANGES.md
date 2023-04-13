@@ -2,6 +2,14 @@
 
 ---
 
+# v0.3.0
+
+### New
+
+- Add scraping configuration for usage by Prometheus .
+
+---
+
 # v0.2.0
 
 ### New
