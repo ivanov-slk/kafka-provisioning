@@ -6,7 +6,7 @@
 
 ### New
 
-- Add scraping configuration for usage by Prometheus .
+- Add scraping configuration for usage by Prometheus and Grafana.
 
 ---
 
