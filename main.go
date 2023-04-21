@@ -1,6 +1,8 @@
 package main
 
 import (
+	"path/filepath"
+
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	helmv3 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/helm/v3"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
@@ -56,6 +58,23 @@ func main() {
 		kafka_cluster := kafka.GetResource("kafka.strimzi.io/v1beta2/Kafka", "kafka-cluster", "kafka-system") //.(*apiext.CustomResource)
 		ctx.Export("Kafka Cluster", kafka_cluster.URN().ToStringOutput())
 		// Kafka and Zookeeper
+
+		// Prometheus configuration
+		prometheus, err := yaml.NewConfigGroup(ctx, "strimzi-prometheus", &yaml.ConfigGroupArgs{
+			Files: []string{filepath.Join("yaml", "./prometheus-strimzi/*.yaml")},
+		})
+		if err != nil {
+			return err
+		}
+		ctx.Export("Prometheus configuration", prometheus.URN().ToStringOutput())
+		// Prometheus configuration
+
+		// Grafana dashboards
+		grafana, err := yaml.NewConfigGroup(ctx, "grafana-strimzi-dashboards", &yaml.ConfigGroupArgs{
+			Files: []string{filepath.Join("yaml", "./grafana-strimzi-dashboards/*.yaml")},
+		})
+		ctx.Export("Grafana Strimzi dashboards", grafana.URN().ToStringOutput())
+		// Grafana dashboards
 
 		return nil
 	})
