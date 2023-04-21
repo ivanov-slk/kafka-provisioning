@@ -6,6 +6,7 @@ metadata:
     app: strimzi
     release: kube-prometheus-stack
   name: prometheus-k8s-rules
+  namespace: kafka-system
 spec:
   groups:
     - name: kafka

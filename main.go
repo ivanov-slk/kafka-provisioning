@@ -66,6 +66,7 @@ func main() {
 		if err != nil {
 			return err
 		}
+
 		ctx.Export("Prometheus configuration", prometheus.URN().ToStringOutput())
 		// Prometheus configuration
 
@@ -73,6 +74,10 @@ func main() {
 		grafana, err := yaml.NewConfigGroup(ctx, "grafana-strimzi-dashboards", &yaml.ConfigGroupArgs{
 			Files: []string{filepath.Join("yaml", "./grafana-strimzi-dashboards/*.yaml")},
 		})
+		if err != nil {
+			return err
+		}
+
 		ctx.Export("Grafana Strimzi dashboards", grafana.URN().ToStringOutput())
 		// Grafana dashboards
 
