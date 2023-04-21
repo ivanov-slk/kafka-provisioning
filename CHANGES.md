@@ -2,6 +2,15 @@
 
 ---
 
+# v0.4.0
+
+### New
+
+- Add Prometheus `PodMonitor`s;
+- Add Grafana dashboards.
+
+---
+
 # v0.3.0
 
 ### New
