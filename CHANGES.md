@@ -2,6 +2,14 @@
 
 ---
 
+# v0.4.1
+
+### Maintenance
+
+- Describe the added Prometheus configurations.
+
+---
+
 # v0.4.0
 
 ### New
