@@ -61,7 +61,7 @@ func main() {
 
 		// Prometheus configuration
 		prometheus, err := yaml.NewConfigGroup(ctx, "strimzi-prometheus", &yaml.ConfigGroupArgs{
-			Files: []string{filepath.Join("yaml", "./prometheus-strimzi/*.yaml")},
+			Files: []string{filepath.Join("prometheus-strimzi", "*.yaml")},
 		})
 		if err != nil {
 			return err
@@ -72,7 +72,7 @@ func main() {
 
 		// Grafana dashboards
 		grafana, err := yaml.NewConfigGroup(ctx, "grafana-strimzi-dashboards", &yaml.ConfigGroupArgs{
-			Files: []string{filepath.Join("yaml", "./grafana-strimzi-dashboards/*.yaml")},
+			Files: []string{filepath.Join("grafana-strimzi-dashboards", "*.yaml")},
 		})
 		if err != nil {
 			return err
