@@ -6,7 +6,7 @@ A repository for automatic provisioning of a [Strimzi](https://strimzi.io) Kafka
 
 The repository leverages [Pulumi](https://www.pulumi.com/) for managing the provisioning. Installing Pulumi on Linux can be done via `curl -fsSL https://get.pulumi.com | sh`.
 
-A working Kubernetes cluster is also needed. Testing was performed on the configuration [here](https://github.com/ivanov-slk/virtualization-set-up).
+A working Kubernetes cluster with Prometheus CRDs is also needed. Testing was performed on the configuration [here](https://github.com/ivanov-slk/virtualization-set-up).
 
 ## Usage
 
@@ -14,4 +14,4 @@ Run `pulumi up` to provision the Kafka cluster with default settings. Run `pulum
 
 ## Monitoring
 
-The Kafka cluster exposes metrics for usage by Prometheus. An example of how Prometheus itself is configured and how the associated Grafana dashboards are configured can be found [here](https://github.com/ivanov-slk/virtualization-set-up/tree/master/prometheus-stack). The example follows the official documentation for [Strimzi](https://strimzi.io/docs/operators/latest/deploying.html#assembly-metrics-prometheus-str).
+The Kafka cluster exposes metrics for usage by Prometheus. There are custom configurations for monitoring [Strimzi](https://github.com/strimzi/strimzi-kafka-operator) Kafka clusters. Strimzi's Grafana dashboards are included and Prometheus is configured to supply metrics for them.
