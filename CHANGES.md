@@ -2,6 +2,14 @@
 
 ---
 
+# v0.4.2
+
+### Maintenance
+
+- Use the OCI standard when referencing the Helm repository.
+
+---
+
 # v0.4.1
 
 ### Maintenance

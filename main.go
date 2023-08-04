@@ -31,18 +31,15 @@ func main() {
 
 		// Strimzi operator
 		strimziKafkaOperator, err := helmv3.NewRelease(ctx, "strimzikafkaoperator", &helmv3.ReleaseArgs{
-			Chart:     pulumi.String("strimzi-kafka-operator"),
+			Chart:     pulumi.String("oci://quay.io/strimzi-helm/strimzi-kafka-operator"),
 			Namespace: namespace.Metadata.Name(),
 			Name:      pulumi.String("strimzi-kafka-operator"),
-			RepositoryOpts: &helmv3.RepositoryOptsArgs{
-				Repo: pulumi.String("https://strimzi.io/charts/"),
-			},
 		})
 		if err != nil {
 			return err
 		}
 
-		// Export some values for use elsewhere,
+		// // Export some values for use elsewhere,
 		ctx.Export("Operator", strimziKafkaOperator.Name)
 		// Strimzi operator
 
